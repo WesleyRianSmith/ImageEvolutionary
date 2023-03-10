@@ -55,9 +55,11 @@ def combine(*parents):
 
 
 def select(solution):
-    tournament = random.sample(solution, 2)
-    print(tournament)
-    return max(tournament, key=lambda x: x.fitness)
+    groupA = random.sample(solution, 10)
+    print(groupA)
+    groupB = random.sample(solution, 10)
+    print(groupB)
+    return max(groupA, key=lambda x: x.fitness), max(groupB, key=lambda x: x.fitness)
     pass
 
 
@@ -89,7 +91,7 @@ def make_polygon(n):
 
 
 def initialise():
-    return [make_polygon(3) for i in range(3)]
+    return [make_polygon(3) for _ in range(3)]
 
 
 evolution = (Evolution().survive(fraction=1)
