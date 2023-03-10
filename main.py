@@ -59,7 +59,7 @@ def select(solution):
     print(groupA)
     groupB = random.sample(solution, 10)
     print(groupB)
-    return max(groupA, key=lambda x: x.fitness), max(groupB, key=lambda x: x.fitness)
+    return [max(groupA, key=lambda x: x.fitness), max(groupB, key=lambda x: x.fitness)]
     pass
 
 
