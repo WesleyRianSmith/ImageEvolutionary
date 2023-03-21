@@ -10,27 +10,31 @@ TARGET.load()  # read image and close the file
 def mutate(solution, rate):
     # print("-"* 30)
     maximum = 10
+    polygon_count = len(solution)
+    mutation_choice = []
+    mutation_choice += [1] * 10
+    mutation_choice += [2] * 10
+    mutation_choice += [3] * 10
+    mutation_choice += [4] * 10
     if len(solution) < 100:
-        maximum = 11
-    i = 3 #random.randint(1,maximum)
-    if i <= 4:
+        mutation_choice += [6] * 1
+    if len(solution) > 3:
+        mutation_choice += [5] * 1
+    i = mutation_choice[random.randint(1,len(mutation_choice))-1]
+    if i == 1:
         # print("Random point change")
         polygon_index = random.randint(0, len(solution) - 1)
         polygon = solution[polygon_index]
         coords = [x for x in polygon]
-        print("-" * 20)
-        print(coords)
+        #print("-" * 20)
+        #print(coords)
         point_index = random.randint(1, len(coords) - 1)
         random_point = coords[point_index]
-
-        print(random_point)
+        #print(random_point)
         new_point = tuple([int(x + random.gauss(0, 10)) for x in random_point])
         coords[point_index] = new_point
         solution[polygon_index] = coords
-    elif i == 11:
-        # print("Add new polygon")
-        solution.append(make_polygon(random.randint(3, 5)))
-    elif 4 < i <= 8:
+    elif i == 2:
         # print("Change colour")
         polygon_index = random.randint(0, len(solution) - 1)
         polygon = solution[polygon_index]
@@ -39,10 +43,10 @@ def mutate(solution, rate):
         for x in range(3):
             colors[x] = max(0, min(256, int(colors[x] + random.gauss(0, 10))))
         polygon[0] = tuple(colors)
-    elif 8 < i <= 9:
+    elif i == 3:
         # print("shuffling polygons")
         random.shuffle(solution)
-    else:
+    elif i == 4:
         # print("New alpha value")
         polygon_index = random.randint(0, len(solution) - 1)
         polygon = solution[polygon_index]
@@ -50,40 +54,26 @@ def mutate(solution, rate):
         new_alpha = max(30, min(60, int(colors[3] + random.gauss(0, 10))))
         colors[3] = new_alpha
         polygon[0] = tuple(colors)
-        pass
+    elif i == 5:
+        # print("Delete a random polygon")
+        solution.pop(random.randrange(len(solution)))
+    elif i == 6:
+        # print("Add new polygon")
+        solution.append(make_polygon(random.randint(3, 5)))
 
     return solution
     pass
 
 
 def combine(*parents):
-    print("combine")
-    left_shapes = []
-    right_shapes = []
-    for polygon in parents:
-        all_right = True
-        all_left = True
-        for x in range(1, len(polygon)):
-            x_coordinate = polygon[x][0]
-            if x_coordinate[0] > 100:
-                all_left = False
-            if x_coordinate[0] <= 100:
-                all_right = False
-        if all_right:
-            right_shapes.append(polygon)
-        if all_left:
-            left_shapes.append(polygon)
-
-    new_list = left_shapes + right_shapes
-    print(new_list)
-    return parents
+    return parents[0]
 
 
 
 def select(population):
-    groupA = random.sample(population, 10)
-    groupB = random.sample(population, 10)
-    return [max(groupA, key=lambda x: x.fitness), max(groupB, key=lambda x: x.fitness)]
+    groupA = random.sample(population, 5)
+    #groupB = random.sample(population, 10)
+    return [max(groupA, key=lambda x: x.fitness)]
 
 
 
@@ -122,26 +112,24 @@ def initialise():
 
 
 def run():
-    evolution = (Evolution().survive(fraction=0.8)
-                .breed(parent_picker = select, combiner = combine)
+    evolution = (Evolution().survive(fraction=0.5)
+
                  .mutate(mutate_function=mutate, rate=0.1)
                  .evaluate())
-    population = Population.generate(initialise, evaluate, size=20, maximize=True)
-    population = population.evolve(evolution)
-    #print(population.individuals)
-    parents = select(population.individuals)
-    for x in range(2):
-        #print(parents[x].chromosome)
-        draw(parents[x].chromosome).save("solution" + str(x) + ".png")
-    #print(parents)
-    #for x in population:
-       #print(x.chromosome)
+    evolution = (Evolution()
+                 .survive(fraction=0.5, selector="tournament", tournament_size=2)
+                 .mutate(mutate_function=mutate, rate=0.5)
+                 .evaluate(evaluate_function=evaluate))
 
-    for i in range(10):
+    population = Population.generate(initialise, evaluate, size=50, maximize=True)
+    population = population.evolve(evolution)
+
+
+    for i in range(2000):
 
         population = population.evolve(evolution)
-        print("i =", i, " best =", population.current_best.fitness,
+        print("i =", i, " best =", population.current_best.fitness," polygons =",len(population.current_best.chromosome),
               " worst =", population.current_worst.fitness)
-    draw(population[0].chromosome).save("solution.png")
+    draw(population.current_best.chromosome).save("solution.png")
 
 run()
