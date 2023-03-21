@@ -142,6 +142,8 @@ generations = 40000
 crossover_probability = 0.7
 creator.create("FitnessMax", base.Fitness, weights=(1.0,))
 creator.create("Individual", list, fitness=creator.FitnessMax)
+
+
 def run():
     random.seed(seed)
 
