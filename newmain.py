@@ -93,7 +93,7 @@ def mutate(solution, rate):
 
 
 def make_polygon(n=3, large_chance=0.3, small_chance=0.3, background_polygon=False):
-    color = [randint(0, 256) for _ in range(3)]
+    color = [randint(0, 255) for _ in range(3)]
     color.append(randint(30, 60))
     color = [tuple(color)]
     chance = random()
@@ -104,7 +104,7 @@ def make_polygon(n=3, large_chance=0.3, small_chance=0.3, background_polygon=Fal
         max_size = 40
     elif chance < large_chance + small_chance:
         max_size = 190
-    coordinates_x, coordinates_y = [randint(10, max_size) for _ in range(n)], [randint(10, 110) for _ in range(n)]
+    coordinates_x, coordinates_y = [randint(10, max_size) for _ in range(n)], [randint(10, max_size) for _ in range(n)]
     max_x, max_y = max(coordinates_x), max(coordinates_y)
     min_x, min_y = min(coordinates_x), min(coordinates_y)
     x_right_room, y_right_room = 190 - max_x, 190 - max_y
@@ -133,6 +133,7 @@ creator.create("Individual", list, fitness=creator.FitnessMax)
 
 def run(generations, crossover_probability, mutation_probability, random_seed, population_size, gaussian_rate=0.5,
         tournament_size=10, verbose_value=True):
+    print(1)
     seed(random_seed)
     toolbox = base.Toolbox()
     pool = multiprocessing.Pool()
@@ -167,7 +168,7 @@ def run(generations, crossover_probability, mutation_probability, random_seed, p
     fittest_individual = max(population, key=lambda individual: individual.fitness.values[0])
     draw(fittest_individual, True)
     for x in list(log):
-        if x.get("max") > 0.95:
+        if x.get("max") >= 0.95:
             generations_needed_amount = x.get("gen")
             return generations_needed_amount
 
@@ -195,7 +196,7 @@ def TestLambdaParameters(generations, population_size, seed_number):
 def TestEaSimpleParameters(generations, population_size, seed_number):
     for i in range(10):
         mutation_probability = 10 - i
-        for y in range(10):
+        for y in range(11):
             crossover_probability = 10 - y
             generations = RunParameterTest(generations, crossover_probability / 10,
                                            mutation_probability / 10, seed_number,
