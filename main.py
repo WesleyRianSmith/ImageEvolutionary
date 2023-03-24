@@ -1,4 +1,4 @@
-import random
+from random import *
 import statistics
 import multiprocessing
 from math import atan2, pi
@@ -61,7 +61,7 @@ def mutate(solution, rate):
     elif chance < mutate_point_chance + mutate_add_point_chance and len(polygon) < 6:
         color = polygon[0]
         coords = [point for point in polygon[1:]]
-        new_point = (random.randint(0, 190),random.randint(0, 190))
+        new_point = (randint(0, 190),randint(0, 190))
         coords.append(new_point)
         coords = sort_points(coords)  # Ensure the new point is in the correct index
         polygon = [color] + coords
@@ -106,7 +106,8 @@ def make_polygon(n=3):
 
 
 def create_individual():
-    return [make_polygon(3) for _ in range(3)]
+    return [make_polygon(4, 0, 0, True)] + [make_polygon(randint(3, 5)) for _ in range(3)]
+
 
 
 print(create_individual())
